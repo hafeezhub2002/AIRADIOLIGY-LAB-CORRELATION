@@ -4,35 +4,43 @@ from pydantic import BaseModel
 import io
 from PyPDF2 import PdfReader
 
+# ----------------------------------------------------
 # Initialize FastAPI
+# ----------------------------------------------------
 app = FastAPI()
 
-# Correct CORS — allow Vercel frontend
-origins = [
-    "http://localhost:3000",
-    "https://airadiology-lab-correlation-frontend.vercel.app",   # <-- PUT YOUR REAL VERCEL URL HERE
-    "https://*.vercel.app"
-]
-
+# ----------------------------------------------------
+# Correct CORS for your real frontend
+# ----------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=[
+        "http://localhost:3000",
+        "https://airadioligylabcorrelationf.vercel.app",  # <-- YOUR REAL FRONTEND
+        "https://*.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Pydantic model
+# ----------------------------------------------------
+# Pydantic Model
+# ----------------------------------------------------
 class MedicalData(BaseModel):
     radiology_report: str
     lab_values: str
     clinical_notes: str
 
-# Mock RAG function (replace later)
+# ----------------------------------------------------
+# Mock RAG
+# ----------------------------------------------------
 def retrieve_relevant_facts(text: str) -> str:
     return "Relevant medical knowledge found."
 
-# Mock LLM (replace with Gemini later)
+# ----------------------------------------------------
+# Mock LLM Response
+# ----------------------------------------------------
 class LLMClient:
     def models_generate_content(self, model: str, contents: str) -> str:
         return (
@@ -43,11 +51,16 @@ class LLMClient:
 
 client = LLMClient()
 
+# ----------------------------------------------------
+# Root Endpoint (for testing)
+# ----------------------------------------------------
 @app.get("/")
 async def root():
     return {"message": "Backend is running successfully!"}
 
-# Structured text endpoint
+# ----------------------------------------------------
+# Structured Input Endpoint
+# ----------------------------------------------------
 @app.post("/analyze")
 async def analyze_data(data: MedicalData):
     try:
@@ -88,7 +101,9 @@ async def analyze_data(data: MedicalData):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# PDF endpoint
+# ----------------------------------------------------
+# PDF Upload Endpoint
+# ----------------------------------------------------
 @app.post("/analyze_pdf")
 async def analyze_pdf(file: UploadFile = File(...)):
     try:
