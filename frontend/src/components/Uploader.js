@@ -19,7 +19,8 @@ function Uploader() {
     formData.append("file", selectedFile);
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/analyze", formData, {
+     const response = await fetch("https://ai-radiology-backend.onrender.com/analyze_pdf", {
+
         headers: { "Content-Type": "multipart/form-data" },
       });
       setResult(JSON.stringify(response.data, null, 2));
